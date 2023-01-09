@@ -1,4 +1,5 @@
 [workspace]
 members = [
-    "src/mini_ledger_backend",
+    "src/mini_ledger",
+    "src/mini_ledger_core",
 ]

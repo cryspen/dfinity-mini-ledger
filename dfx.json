@@ -1,19 +1,10 @@
 {
   "version": 1,
   "canisters": {
-    "mini_ledger_backend": {
+    "mini_ledger": {
       "type": "rust",
-      "package": "mini_ledger_backend",
-      "candid": "src/mini_ledger_backend/mini_ledger_backend.did"
-    },
-    "mini_ledger_frontend": {
-      "type": "assets",
-      "source": [
-        "src/mini_ledger_frontend/assets"
-      ],
-      "dependencies": [
-        "mini_ledger_backend"
-      ]
+      "package": "mini-ledger",
+      "candid": "src/mini_ledger/mini_ledger.did"
     }
   },
   "defaults": {
