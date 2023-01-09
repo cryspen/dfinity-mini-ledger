@@ -1,37 +1,17 @@
 # mini_ledger
 
-Welcome to your new mini_ledger project and to the internet computer development community. By default, creating a new project adds this README and some template files to your project directory. You can edit these template files to customize your project and to include your own code to speed up the development cycle.
+This is a simplified version of the ICRC-1 ledger that can be used to gauge verification tools.
 
-To get started, you might want to explore the project directory structure and the default configuration file. Working with this project in your development environment will not affect any production deployment or identity tokens.
+In particular, this version:
+ - can be built using ``cargo build`` ()has no dependencies on the main IC repo)
+ - doesn't archive blocks, avoiding async blocks and traits (all messages are processed atomically)
+ - aside from main.rs, it avoids interior mutability
 
-To learn more before you start working with mini_ledger, see the following documentation available online:
+It still exercises a number of Rust/Cargo and other features:
+ - It uses lots of mutable references
+ - It's heavily abstracted, with generics, traits, and trait bounds everywhere
+ - It uses macros (to derive things like default implementations, but also serialization/deserialization code)
+ - It uses a Cargo workspace
+ - It relies on a number of standard library collections (vectors, maps, queues)
+ - It uses hashing (relying on an external SHA-256 library to do the legwork)
 
-- [Quick Start](https://smartcontracts.org/docs/quickstart/quickstart-intro.html)
-- [SDK Developer Tools](https://smartcontracts.org/docs/developers-guide/sdk-guide.html)
-- [Rust Canister Devlopment Guide](https://smartcontracts.org/docs/rust-guide/rust-intro.html)
-- [ic-cdk](https://docs.rs/ic-cdk)
-- [ic-cdk-macros](https://docs.rs/ic-cdk-macros)
-- [Candid Introduction](https://smartcontracts.org/docs/candid-guide/candid-intro.html)
-- [JavaScript API Reference](https://erxue-5aaaa-aaaab-qaagq-cai.raw.ic0.app)
-
-If you want to start working on your project right away, you might want to try the following commands:
-
-```bash
-cd mini_ledger/
-dfx help
-dfx canister --help
-```
-
-## Running the project locally
-
-If you want to test your project locally, you can use the following commands:
-
-```bash
-# Starts the replica, running in the background
-dfx start --background
-
-# Deploys your canisters to the replica and generates your candid interface
-dfx deploy
-```
-
-Once the job completes, your application will be available at `http://localhost:4943?canisterId={asset_canister_id}`.
