@@ -168,16 +168,4 @@ where
             .cloned()
             .unwrap_or(Tokens::ZERO)
     }
-
-    /// Returns the total quantity of Tokens that are "in existence" -- that
-    /// is, excluding un-minted "potential" Tokens.
-    pub fn total_supply(&self) -> Tokens {
-        (Tokens::MAX - self.token_pool).unwrap_or_else(|e| {
-            panic!(
-                "It is expected that the token_pool is always smaller than \
-            or equal to Tokens::MAX, yet subtracting it lead to the following error: {}",
-                e
-            )
-        })
-    }
 }

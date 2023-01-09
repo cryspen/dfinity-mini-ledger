@@ -1,7 +1,7 @@
 use candid::CandidType;
 use serde::{Deserialize, Serialize};
 use std::convert::TryInto;
-use std::ops::{Add, Sub};
+use std::ops::Add;
 use std::time::{Duration, SystemTime};
 
 #[derive(
@@ -48,13 +48,5 @@ impl Add<Duration> for TimeStamp {
 
     fn add(self, d: Duration) -> Self {
         (SystemTime::from(self) + d).into()
-    }
-}
-
-impl Sub<Duration> for TimeStamp {
-    type Output = Self;
-
-    fn sub(self, d: Duration) -> Self {
-        (SystemTime::from(self) - d).into()
     }
 }

@@ -96,21 +96,3 @@ fn hash_value(value: &Value) -> Result<Hash, String> {
         _ => Err(format!("unsupported value type: {:?}", value)),
     }
 }
-
-#[test]
-fn check_interface_spec_example() {
-    use ciborium::cbor;
-    use serde_bytes::ByteBuf;
-
-    let value = cbor!({
-         "request_type" => "call",
-         "canister_id" => ByteBuf::from(b"\x00\x00\x00\x00\x00\x00\x04\xD2".to_vec()),
-         "method_name" => "hello",
-         "arg" => ByteBuf::from(b"DIDL\x00\xFD*".to_vec()),
-    })
-    .unwrap();
-    assert_eq!(
-        hex::encode(hash_value(&value).unwrap()),
-        "8781291c347db32a9d8c10eb62b710fce5a93be676474c42babc74c51858f94b"
-    );
-}

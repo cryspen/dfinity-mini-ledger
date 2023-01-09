@@ -6,17 +6,6 @@ pub mod transaction;
 use account::Account;
 use candid::{types::number::Nat, CandidType};
 use endpoints::{GetTransactionsResponse, Transaction as Tx};
-use transaction::{Memo, Operation, Transaction, TransactionInfo, TRIMMED_MEMO};
-// use ic_icrc1::endpoints::{
-//     ArchivedTransactionRange, GetTransactionsResponse, QueryArchiveFn, Transaction as Tx, Value,
-// };
-// use ic_icrc1::{Account, Block, LedgerBalances, Transaction};
-// use ic_ledger_canister_core::{
-//     archive::{ArchiveCanisterWasm, ArchiveOptions},
-//     blockchain::Blockchain,
-//     ledger::{apply_transaction, block_locations, LedgerData, TransactionInfo},
-//     range_utils,
-// };
 use mini_ledger_core::{
     balances::{BalanceError, Balances, BalancesStore},
     block::{BlockIndex, BlockType, EncodedBlock, HashOf},
@@ -24,12 +13,11 @@ use mini_ledger_core::{
     tokens::Tokens,
 };
 use serde::{Deserialize, Serialize};
-use serde_bytes::ByteBuf;
 use std::collections::{BTreeMap, HashMap, VecDeque};
 use std::time::Duration;
+use transaction::{Memo, Operation, Transaction, TransactionInfo, TRIMMED_MEMO};
 
 use ciborium::tag::Required;
-// use ic_ledger_canister_core::ledger::LedgerTransaction;
 
 pub const PERMITTED_DRIFT: Duration = Duration::from_secs(60);
 
@@ -417,62 +405,6 @@ pub fn apply_transaction<L: LedgerData>(
     Ok((height, ledger.blockchain().last_hash.unwrap()))
 }
 
-// impl LedgerTransaction for Transaction {
-//     type AccountId = Account;
-//
-//     fn burn(
-//         from: Account,
-//         amount: Tokens,
-//         created_at_time: Option<TimeStamp>,
-//         memo: Option<u64>,
-//     ) -> Self {
-//         Self {
-//             operation: Operation::Burn {
-//                 from,
-//                 amount: amount.get_e8s(),
-//             },
-//             created_at_time: created_at_time.map(|t| t.as_nanos_since_unix_epoch()),
-//             memo: memo.map(Memo::from),
-//         }
-//     }
-//
-//     fn created_at_time(&self) -> Option<TimeStamp> {
-//         self.created_at_time
-//             .map(TimeStamp::from_nanos_since_unix_epoch)
-//     }
-//
-//     fn hash(&self) -> HashOf<Self> {
-//         let mut cbor_bytes = vec![];
-//         ciborium::ser::into_writer(self, &mut cbor_bytes)
-//             .expect("bug: failed to encode a transaction");
-//         hash::hash_cbor(&cbor_bytes)
-//             .map(HashOf::new)
-//             .unwrap_or_else(|err| {
-//                 panic!(
-//                     "bug: transaction CBOR {} is not hashable: {}",
-//                     hex::encode(&cbor_bytes),
-//                     err
-//                 )
-//             })
-//     }
-//
-//     fn apply<S>(&self, balances: &mut Balances<Self::AccountId, S>) -> Result<(), BalanceError>
-//     where
-//         S: Default + BalancesStore<Self::AccountId>,
-//     {
-//         match &self.operation {
-//             Operation::Transfer {
-//                 from,
-//                 to,
-//                 amount,
-//                 fee,
-//             } => balances.transfer(from, to, Tokens::from_e8s(*amount), Tokens::from_e8s(*fee)),
-//             Operation::Burn { from, amount } => balances.burn(from, Tokens::from_e8s(*amount)),
-//             Operation::Mint { to, amount } => balances.mint(to, Tokens::from_e8s(*amount)),
-//         }
-//     }
-// }
-
 impl Transaction {
     pub fn mint(
         to: Account,
@@ -582,51 +514,6 @@ const ACCOUNTS_OVERFLOW_TRIM_QUANTITY: usize = 100_000;
 const MAX_TRANSACTIONS_IN_WINDOW: usize = 3_000_000;
 const MAX_TRANSACTIONS_TO_PURGE: usize = 100_000;
 
-/// Like [endpoints::Value], but can be serialized to CBOR.
-#[derive(Deserialize, Serialize, Clone, Debug)]
-pub enum StoredValue {
-    NatBytes(ByteBuf),
-    IntBytes(ByteBuf),
-    Text(String),
-    Blob(ByteBuf),
-}
-
-// impl From<StoredValue> for Value {
-//     fn from(v: StoredValue) -> Self {
-//         match v {
-//             StoredValue::NatBytes(num_bytes) => Self::Nat(
-//                 Nat::decode(&mut &num_bytes[..])
-//                     .unwrap_or_else(|e| panic!("bug: invalid Nat encoding {:?}: {}", num_bytes, e)),
-//             ),
-//             StoredValue::IntBytes(int_bytes) => Self::Int(
-//                 Int::decode(&mut &int_bytes[..])
-//                     .unwrap_or_else(|e| panic!("bug: invalid Int encoding {:?}: {}", int_bytes, e)),
-//             ),
-//             StoredValue::Text(text) => Self::Text(text),
-//             StoredValue::Blob(bytes) => Self::Blob(bytes),
-//         }
-//     }
-// }
-//
-// impl From<Value> for StoredValue {
-//     fn from(v: Value) -> Self {
-//         match v {
-//             Value::Nat(num) => {
-//                 let mut buf = vec![];
-//                 num.encode(&mut buf).expect("bug: failed to encode nat");
-//                 Self::NatBytes(ByteBuf::from(buf))
-//             }
-//             Value::Int(int) => {
-//                 let mut buf = vec![];
-//                 int.encode(&mut buf).expect("bug: failed to encode nat");
-//                 Self::IntBytes(ByteBuf::from(buf))
-//             }
-//             Value::Text(text) => Self::Text(text),
-//             Value::Blob(bytes) => Self::Blob(bytes),
-//         }
-//     }
-// }
-
 #[derive(Deserialize, CandidType, Clone, Debug, PartialEq, Eq)]
 pub struct InitArgs {
     pub minting_account: Account,
@@ -634,7 +521,6 @@ pub struct InitArgs {
     pub transfer_fee: u64,
     pub token_name: String,
     pub token_symbol: String,
-    // pub metadata: Vec<(String, Value)>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -784,22 +670,4 @@ impl Ledger {
             transactions: local_transactions,
         }
     }
-}
-
-pub trait LedgerAccess {
-    type Ledger: LedgerData;
-
-    /// Executes a function on a ledger reference.
-    ///
-    /// # Panics
-    ///
-    /// Panics if `f` tries to call `with_ledger` or `with_ledger_mut` recurvively.
-    fn with_ledger<R>(f: impl FnOnce(&Self::Ledger) -> R) -> R;
-
-    /// Executes a function on a mutable ledger reference.
-    ///
-    /// # Panics
-    ///
-    /// Panics if `f` tries to call `with_ledger` or `with_ledger_mut` recurvively.
-    fn with_ledger_mut<R>(f: impl FnOnce(&mut Self::Ledger) -> R) -> R;
 }

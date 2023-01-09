@@ -8,7 +8,7 @@ use mini_ledger::{
     endpoints::{GetTransactionsRequest, GetTransactionsResponse, TransferArg, TransferError},
     transaction::{Operation, Transaction},
 };
-use mini_ledger::{apply_transaction, LedgerAccess, LedgerData};
+use mini_ledger::{apply_transaction, LedgerData};
 use mini_ledger::{InitArgs, Ledger};
 use mini_ledger_core::{timestamp::TimeStamp, tokens::Tokens};
 use num_traits::ToPrimitive;
@@ -16,6 +16,24 @@ use std::cell::RefCell;
 
 thread_local! {
     static LEDGER: RefCell<Option<Ledger>> = RefCell::new(None);
+}
+
+pub trait LedgerAccess {
+    type Ledger: LedgerData;
+
+    /// Executes a function on a ledger reference.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `f` tries to call `with_ledger` or `with_ledger_mut` recurvively.
+    fn with_ledger<R>(f: impl FnOnce(&Self::Ledger) -> R) -> R;
+
+    /// Executes a function on a mutable ledger reference.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `f` tries to call `with_ledger` or `with_ledger_mut` recurvively.
+    fn with_ledger_mut<R>(f: impl FnOnce(&mut Self::Ledger) -> R) -> R;
 }
 
 struct Access;
@@ -98,12 +116,6 @@ fn icrc1_minting_account() -> Option<Account> {
 #[candid_method(query, rename = "icrc1_balance_of")]
 fn icrc1_balance_of(account: Account) -> Nat {
     Access::with_ledger(|ledger| Nat::from(ledger.balances().account_balance(&account).get_e8s()))
-}
-
-#[query(name = "icrc1_total_supply")]
-#[candid_method(query, rename = "icrc1_total_supply")]
-fn icrc1_total_supply() -> Nat {
-    Access::with_ledger(|ledger| Nat::from(ledger.balances().total_supply().get_e8s()))
 }
 
 #[update]

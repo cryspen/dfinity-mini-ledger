@@ -1,7 +1,6 @@
 use candid::CandidType;
 use core::ops::{Add, AddAssign, Sub, SubAssign};
 use serde::{Deserialize, Serialize};
-use std::fmt;
 
 #[derive(
     Serialize,
@@ -156,22 +155,5 @@ impl Sub for Tokens {
 impl SubAssign for Tokens {
     fn sub_assign(&mut self, other: Self) {
         *self = (*self - other).expect("-= panicked");
-    }
-}
-
-/// ```
-/// # use ic_ledger_core::Tokens;
-/// let token = Tokens::new(12, 200).unwrap();
-/// let s = format!("{}", token);
-/// assert_eq!(&s[..], "12.00000200 Token")
-/// ```
-impl fmt::Display for Tokens {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "{}.{:08} Token",
-            self.get_tokens(),
-            self.get_remainder_e8s()
-        )
     }
 }
