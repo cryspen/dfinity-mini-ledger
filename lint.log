@@ -1,0 +1,332 @@
+warning: [Circus] Derives are not supported
+  --> src/mini_ledger_core/src/block.rs:18:17
+   |
+18 | #[derive(Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
+   |                 ^^^^
+   |
+   = note: this warning originates in the derive macro `Hash` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Derives are not supported
+  --> src/mini_ledger_core/src/block.rs:18:45
+   |
+18 | #[derive(Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
+   |                                             ^^^^^^^^^^
+   |
+   = note: this warning originates in the derive macro `PartialOrd` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Derives are not supported
+  --> src/mini_ledger_core/src/block.rs:18:57
+   |
+18 | #[derive(Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
+   |                                                         ^^^
+   |
+   = note: this warning originates in the derive macro `Ord` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Derives are not supported
+   --> src/mini_ledger_core/src/block.rs:143:70
+    |
+143 |     Serialize, Deserialize, CandidType, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash,
+    |                                                                      ^^^^^^^^^^
+    |
+    = note: this warning originates in the derive macro `PartialOrd` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Derives are not supported
+   --> src/mini_ledger_core/src/block.rs:143:82
+    |
+143 |     Serialize, Deserialize, CandidType, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash,
+    |                                                                                  ^^^
+    |
+    = note: this warning originates in the derive macro `Ord` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Derives are not supported
+   --> src/mini_ledger_core/src/block.rs:143:87
+    |
+143 |     Serialize, Deserialize, CandidType, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash,
+    |                                                                                       ^^^^
+    |
+    = note: this warning originates in the derive macro `Hash` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Derives are not supported
+ --> src/mini_ledger_core/src/timestamp.rs:8:76
+  |
+8 |     Debug, Clone, Copy, CandidType, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash,
+  |                                                                            ^^^^^^^^^^
+  |
+  = note: this warning originates in the derive macro `PartialOrd` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Derives are not supported
+ --> src/mini_ledger_core/src/timestamp.rs:8:88
+  |
+8 |     Debug, Clone, Copy, CandidType, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash,
+  |                                                                                        ^^^
+  |
+  = note: this warning originates in the derive macro `Ord` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Derives are not supported
+ --> src/mini_ledger_core/src/timestamp.rs:8:93
+  |
+8 |     Debug, Clone, Copy, CandidType, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash,
+  |                                                                                             ^^^^
+  |
+  = note: this warning originates in the derive macro `Hash` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Derives are not supported
+  --> src/mini_ledger_core/src/tokens.rs:11:5
+   |
+11 |     Hash,
+   |     ^^^^
+   |
+   = note: this warning originates in the derive macro `Hash` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Derives are not supported
+  --> src/mini_ledger_core/src/tokens.rs:15:5
+   |
+15 |     PartialOrd,
+   |     ^^^^^^^^^^
+   |
+   = note: this warning originates in the derive macro `PartialOrd` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Derives are not supported
+  --> src/mini_ledger_core/src/tokens.rs:16:5
+   |
+16 |     Ord,
+   |     ^^^
+   |
+   = note: this warning originates in the derive macro `Ord` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Derives are not supported
+  --> src/mini_ledger_core/src/tokens.rs:17:5
+   |
+17 |     Default,
+   |     ^^^^^^^
+   |
+   = note: this warning originates in the derive macro `Default` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Mutable self is not supported
+  --> src/mini_ledger_core/src/balances.rs:95:9
+   |
+95 |         &mut self, // TODO[FK]: not allowed for now but will be in the future
+   |         ^^^^^^^^^
+
+warning: [Circus] Mutable self is not supported
+   --> src/mini_ledger_core/src/balances.rs:115:17
+    |
+115 |     pub fn burn(&mut self, from: &AccountId, amount: Tokens) -> Result<(), BalanceError> {
+    |                 ^^^^^^^^^
+
+warning: [Circus] Mutable self is not supported
+   --> src/mini_ledger_core/src/balances.rs:121:17
+    |
+121 |     pub fn mint(&mut self, to: &AccountId, amount: Tokens) -> Result<(), BalanceError> {
+    |                 ^^^^^^^^^
+
+warning: [Circus] Mutable self is not supported
+   --> src/mini_ledger_core/src/balances.rs:129:18
+    |
+129 |     pub fn debit(&mut self, from: &AccountId, amount: Tokens) -> Result<Tokens, BalanceError> {
+    |                  ^^^^^^^^^
+
+warning: [Circus] Mutable self is not supported
+   --> src/mini_ledger_core/src/balances.rs:150:19
+    |
+150 |     pub fn credit(&mut self, to: &AccountId, amount: Tokens) {
+    |                   ^^^^^^^^^
+
+warning: [Circus] Mutable self is not supported
+   --> src/mini_ledger_core/src/tokens.rs:136:19
+    |
+136 |     fn add_assign(&mut self, other: Self) {
+    |                   ^^^^^^^^^
+
+warning: [Circus] Mutable self is not supported
+   --> src/mini_ledger_core/src/tokens.rs:156:19
+    |
+156 |     fn sub_assign(&mut self, other: Self) {
+    |                   ^^^^^^^^^
+
+warning: `mini-ledger-core` (lib) generated 20 warnings
+warning: [Circus] Derives are not supported
+  --> src/mini_ledger/src/hash.rs:13:10
+   |
+13 | #[derive(Default)]
+   |          ^^^^^^^
+   |
+   = note: this warning originates in the derive macro `Default` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Explicit lifetimes are not supported
+  --> src/mini_ledger/src/transaction.rs:27:27
+   |
+27 | pub fn de_compact_account<'de, D>(d: D) -> Result<Account, D::Error>
+   |                           ^^^
+
+warning: [Circus] Derives are not supported
+  --> src/mini_ledger/src/transaction.rs:92:41
+   |
+92 | #[derive(Serialize, Deserialize, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
+   |                                         ^^^^
+   |
+   = note: this warning originates in the derive macro `Hash` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Derives are not supported
+  --> src/mini_ledger/src/transaction.rs:92:69
+   |
+92 | #[derive(Serialize, Deserialize, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
+   |                                                                     ^^^^^^^^^^
+   |
+   = note: this warning originates in the derive macro `PartialOrd` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Derives are not supported
+  --> src/mini_ledger/src/transaction.rs:92:81
+   |
+92 | #[derive(Serialize, Deserialize, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
+   |                                                                                 ^^^
+   |
+   = note: this warning originates in the derive macro `Ord` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Derives are not supported
+   --> src/mini_ledger/src/transaction.rs:139:48
+    |
+139 |     Serialize, Deserialize, CandidType, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord, Default,
+    |                                                ^^^^
+    |
+    = note: this warning originates in the derive macro `Hash` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Derives are not supported
+   --> src/mini_ledger/src/transaction.rs:139:76
+    |
+139 |     Serialize, Deserialize, CandidType, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord, Default,
+    |                                                                            ^^^^^^^^^^
+    |
+    = note: this warning originates in the derive macro `PartialOrd` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Derives are not supported
+   --> src/mini_ledger/src/transaction.rs:139:88
+    |
+139 |     Serialize, Deserialize, CandidType, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord, Default,
+    |                                                                                        ^^^
+    |
+    = note: this warning originates in the derive macro `Ord` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Derives are not supported
+   --> src/mini_ledger/src/transaction.rs:139:93
+    |
+139 |     Serialize, Deserialize, CandidType, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord, Default,
+    |                                                                                             ^^^^^^^
+    |
+    = note: this warning originates in the derive macro `Default` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Explicit lifetimes are not supported
+   --> src/mini_ledger/src/transaction.rs:144:27
+    |
+144 | fn deserialize_memo_bytes<'de, D>(d: D) -> Result<ByteBuf, D::Error>
+    |                           ^^^
+
+warning: [Circus] Derives are not supported
+   --> src/mini_ledger/src/transaction.rs:191:41
+    |
+191 | #[derive(Serialize, Deserialize, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    |                                         ^^^^
+    |
+    = note: this warning originates in the derive macro `Hash` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Derives are not supported
+   --> src/mini_ledger/src/transaction.rs:191:69
+    |
+191 | #[derive(Serialize, Deserialize, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    |                                                                     ^^^^^^^^^^
+    |
+    = note: this warning originates in the derive macro `PartialOrd` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Derives are not supported
+   --> src/mini_ledger/src/transaction.rs:191:81
+    |
+191 | #[derive(Serialize, Deserialize, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    |                                                                                 ^^^
+    |
+    = note: this warning originates in the derive macro `Ord` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Derives are not supported
+   --> src/mini_ledger/src/lib.rs:446:41
+    |
+446 | #[derive(Serialize, Deserialize, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    |                                         ^^^^
+    |
+    = note: this warning originates in the derive macro `Hash` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Derives are not supported
+   --> src/mini_ledger/src/lib.rs:446:69
+    |
+446 | #[derive(Serialize, Deserialize, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    |                                                                     ^^^^^^^^^^
+    |
+    = note: this warning originates in the derive macro `PartialOrd` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Derives are not supported
+   --> src/mini_ledger/src/lib.rs:446:81
+    |
+446 | #[derive(Serialize, Deserialize, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    |                                                                                 ^^^
+    |
+    = note: this warning originates in the derive macro `Ord` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Mutable self is not supported
+  --> src/mini_ledger/src/hash.rs:23:18
+   |
+23 |     pub fn write(&mut self, data: &[u8]) {
+   |                  ^^^^^^^^^
+
+warning: [Circus] Mutable self is not supported
+   --> src/mini_ledger/src/lib.rs:614:21
+    |
+614 |     fn balances_mut(&mut self) -> &mut Balances<Self::AccountId, HashMap<Self::AccountId, Tokens>> {
+    |                     ^^^^^^^^^
+
+warning: [Circus] Mutable self is not supported
+   --> src/mini_ledger/src/lib.rs:622:23
+    |
+622 |     fn blockchain_mut(&mut self) -> &mut Blockchain {
+    |                       ^^^^^^^^^
+
+warning: [Circus] Mutable self is not supported
+   --> src/mini_ledger/src/lib.rs:630:33
+    |
+630 |     fn transactions_by_hash_mut(&mut self) -> &mut BTreeMap<HashOf<Self::Transaction>, BlockIndex> {
+    |                                 ^^^^^^^^^
+
+warning: [Circus] Mutable self is not supported
+   --> src/mini_ledger/src/lib.rs:638:35
+    |
+638 |     fn transactions_by_height_mut(&mut self) -> &mut VecDeque<TransactionInfo<Self::Transaction>> {
+    |                                   ^^^^^^^^^
+
+warning: [Circus] Mutable self is not supported
+   --> src/mini_ledger/src/lib.rs:642:30
+    |
+642 |     fn on_purged_transaction(&mut self, _height: BlockIndex) {}
+    |                              ^^^^^^^^^
+
+warning: `mini-ledger` (lib) generated 22 warnings
+warning: [Circus] Unsafe code is not supported
+  --> src/mini_ledger/src/main.rs:17:1
+   |
+17 | / thread_local! {
+18 | |     static LEDGER: RefCell<Option<Ledger>> = RefCell::new(None);
+19 | | }
+   | |_^
+   |
+   = note: this warning originates in the macro `$crate::__thread_local_inner` which comes from the expansion of the macro `thread_local` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: [Circus] Async and await are not supported
+   --> src/mini_ledger/src/main.rs:123:1
+    |
+123 | / async fn icrc1_transfer(arg: TransferArg) -> Result<Nat, TransferError> {
+124 | |     let block_idx = Access::with_ledger_mut(|ledger| {
+125 | |         let now = TimeStamp::from_nanos_since_unix_epoch(ic_cdk::api::time());
+126 | |         let created_at_time = arg
+...   |
+198 | |     Ok(Nat::from(block_idx))
+199 | | }
+    | |_^
+
+warning: `mini-ledger` (bin "mini-ledger") generated 2 warnings
+    Finished dev [unoptimized + debuginfo] target(s) in 0.10s
