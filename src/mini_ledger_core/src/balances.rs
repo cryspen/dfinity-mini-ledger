@@ -15,7 +15,7 @@ pub trait BalancesStore<AccountId> {
     /// return value is the new balance.
     fn update<F, E>(&mut self, acc: AccountId, action_on_acc: F) -> Result<Tokens, E>
     where
-        F: FnMut(Option<&Tokens>) -> Result<Tokens, E>;
+        F: Fn(Option<&Tokens>) -> Result<Tokens, E>;
 }
 
 impl<AccountId: std::hash::Hash + Eq> BalancesStore<AccountId> for HashMap<AccountId, Tokens> {
@@ -23,15 +23,15 @@ impl<AccountId: std::hash::Hash + Eq> BalancesStore<AccountId> for HashMap<Accou
         self.get(k)
     }
 
-    fn update<F, E>(&mut self, k: AccountId, mut f: F) -> Result<Tokens, E>
+    fn update<F, E>(&mut self, k: AccountId, f: F) -> Result<Tokens, E>
     where
-        F: FnMut(Option<&Tokens>) -> Result<Tokens, E>,
+        F: Fn(Option<&Tokens>) -> Result<Tokens, E>, // TODO[FK]: disallow FnMut + rewrite
     {
         match self.entry(k) {
             Occupied(mut entry) => {
                 let new_v = f(Some(entry.get()))?;
                 if new_v != Tokens::ZERO {
-                    *entry.get_mut() = new_v;
+                    *entry.get_mut() = new_v; // XXX: Why not use insert?
                 } else {
                     entry.remove_entry();
                 }
@@ -57,14 +57,14 @@ pub enum BalanceError {
 }
 
 /// Describes the state of users accounts at the tip of the chain
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)] // XXX: ignore and assume implementations exist
 pub struct Balances<AccountId, S: BalancesStore<AccountId>> {
     // This uses a mutable map because we don't want to risk a space leak and we only require the
     // account balances at the tip of the chain
     pub store: S,
-    #[serde(alias = "icpt_pool")]
+    #[serde(alias = "icpt_pool")] // XXX: ignore and assume implementations exist
     pub token_pool: Tokens,
-    #[serde(skip)]
+    #[serde(skip)] // XXX: ignore and assume implementations exist
     _marker: PhantomData<AccountId>,
 }
 
@@ -92,7 +92,7 @@ where
     }
 
     pub fn transfer(
-        &mut self,
+        &mut self, // TODO[FK]: not allowed for now but will be in the future
         from: &AccountId,
         to: &AccountId,
         amount: Tokens,
@@ -119,7 +119,7 @@ where
     }
 
     pub fn mint(&mut self, to: &AccountId, amount: Tokens) -> Result<(), BalanceError> {
-        self.token_pool = (self.token_pool - amount).expect("total token supply exceeded");
+        self.token_pool = (self.token_pool - amount).expect("total token supply exceeded"); // XXX: why not return an error?
         self.credit(to, amount);
         Ok(())
     }

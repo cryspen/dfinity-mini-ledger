@@ -89,7 +89,7 @@ impl<T> Serialize for HashOf<T> {
     }
 }
 
-impl<'de, T> Deserialize<'de> for HashOf<T> {
+impl<'de, T> Deserialize<'de> for HashOf<T> { // XXX: explicit lifetimes are not supported
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
