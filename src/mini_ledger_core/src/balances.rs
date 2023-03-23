@@ -15,7 +15,7 @@ pub trait BalancesStore<AccountId> {
     /// return value is the new balance.
     fn update<F, E>(&mut self, acc: AccountId, action_on_acc: F) -> Result<Tokens, E>
     where
-        F: Fn(Option<&Tokens>) -> Result<Tokens, E>;
+        F: FnMut(Option<&Tokens>) -> Result<Tokens, E>;
 }
 
 impl<AccountId: std::hash::Hash + Eq> BalancesStore<AccountId> for HashMap<AccountId, Tokens> {
@@ -23,9 +23,9 @@ impl<AccountId: std::hash::Hash + Eq> BalancesStore<AccountId> for HashMap<Accou
         self.get(k)
     }
 
-    fn update<F, E>(&mut self, k: AccountId, f: F) -> Result<Tokens, E>
+    fn update<F, E>(&mut self, k: AccountId, mut f: F) -> Result<Tokens, E>
     where
-        F: Fn(Option<&Tokens>) -> Result<Tokens, E>, // TODO[FK]: disallow FnMut + rewrite
+        F: FnMut(Option<&Tokens>) -> Result<Tokens, E>, // TODO[FK]: FnMut is disallowed - this can be rewritten
     {
         match self.entry(k) {
             Occupied(mut entry) => {
