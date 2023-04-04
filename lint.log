@@ -1,14 +1,20 @@
+warning: [Circus] FnMut is not supported
+  --> src/mini_ledger_core/src/balances.rs:18:12
+   |
+18 |         F: FnMut(Option<&Tokens>) -> Result<Tokens, E>;
+   |            ^^^^^
+
+warning: [Circus] FnMut is not supported
+  --> src/mini_ledger_core/src/balances.rs:28:12
+   |
+28 |         F: FnMut(Option<&Tokens>) -> Result<Tokens, E>, // TODO[FK]: FnMut is disallowed - this can be rewritten
+   |            ^^^^^
+
 warning: [Circus] Mutable self is not supported
   --> src/mini_ledger_core/src/balances.rs:26:21
    |
 26 |     fn update<F, E>(&mut self, k: AccountId, mut f: F) -> Result<Tokens, E>
    |                     ^^^^^^^^^
-
-warning: [Circus] loop and while are not supported
-  --> src/mini_ledger_core/src/balances.rs:60:21
-   |
-60 | #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)] // XXX: ignore and assume implementations exist
-   |                     ^^^^^^^^^^^
 
 warning: [Circus] Mutable self is not supported
   --> src/mini_ledger_core/src/balances.rs:95:9
@@ -40,122 +46,6 @@ warning: [Circus] Mutable self is not supported
 150 |     pub fn credit(&mut self, to: &AccountId, amount: Tokens) {
     |                   ^^^^^^^^^
 
-warning: [Circus] Implementation of external trait hash::Hash is not supported
-  --> src/mini_ledger_core/src/block.rs:18:17
-   |
-18 | #[derive(Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
-   |                 ^^^^
-   |
-   = note: this warning originates in the derive macro `Hash` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-warning: [Circus] Implementation of external trait cmp::PartialOrd is not supported
-  --> src/mini_ledger_core/src/block.rs:18:45
-   |
-18 | #[derive(Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
-   |                                             ^^^^^^^^^^
-   |
-   = note: this warning originates in the derive macro `PartialOrd` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-warning: [Circus] Implementation of external trait cmp::Ord is not supported
-  --> src/mini_ledger_core/src/block.rs:18:57
-   |
-18 | #[derive(Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
-   |                                                         ^^^
-   |
-   = note: this warning originates in the derive macro `Ord` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-warning: [Circus] Implementation of external trait cmp::PartialOrd is not supported
-   --> src/mini_ledger_core/src/block.rs:143:70
-    |
-143 |     Serialize, Deserialize, CandidType, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash,
-    |                                                                      ^^^^^^^^^^
-    |
-    = note: this warning originates in the derive macro `PartialOrd` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-warning: [Circus] Implementation of external trait cmp::Ord is not supported
-   --> src/mini_ledger_core/src/block.rs:143:82
-    |
-143 |     Serialize, Deserialize, CandidType, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash,
-    |                                                                                  ^^^
-    |
-    = note: this warning originates in the derive macro `Ord` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-warning: [Circus] Implementation of external trait hash::Hash is not supported
-   --> src/mini_ledger_core/src/block.rs:143:87
-    |
-143 |     Serialize, Deserialize, CandidType, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash,
-    |                                                                                       ^^^^
-    |
-    = note: this warning originates in the derive macro `Hash` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-warning: [Circus] loop and while are not supported
- --> src/mini_ledger_core/src/timestamp.rs:8:48
-  |
-8 |     Debug, Clone, Copy, CandidType, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash,
-  |                                                ^^^^^^^^^^^
-
-warning: [Circus] Implementation of external trait cmp::PartialOrd is not supported
- --> src/mini_ledger_core/src/timestamp.rs:8:76
-  |
-8 |     Debug, Clone, Copy, CandidType, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash,
-  |                                                                            ^^^^^^^^^^
-  |
-  = note: this warning originates in the derive macro `PartialOrd` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-warning: [Circus] Implementation of external trait cmp::Ord is not supported
- --> src/mini_ledger_core/src/timestamp.rs:8:88
-  |
-8 |     Debug, Clone, Copy, CandidType, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash,
-  |                                                                                        ^^^
-  |
-  = note: this warning originates in the derive macro `Ord` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-warning: [Circus] Implementation of external trait hash::Hash is not supported
- --> src/mini_ledger_core/src/timestamp.rs:8:93
-  |
-8 |     Debug, Clone, Copy, CandidType, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash,
-  |                                                                                             ^^^^
-  |
-  = note: this warning originates in the derive macro `Hash` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-warning: [Circus] loop and while are not supported
- --> src/mini_ledger_core/src/tokens.rs:7:5
-  |
-7 |     Deserialize,
-  |     ^^^^^^^^^^^
-
-warning: [Circus] Implementation of external trait hash::Hash is not supported
-  --> src/mini_ledger_core/src/tokens.rs:11:5
-   |
-11 |     Hash,
-   |     ^^^^
-   |
-   = note: this warning originates in the derive macro `Hash` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-warning: [Circus] Implementation of external trait cmp::PartialOrd is not supported
-  --> src/mini_ledger_core/src/tokens.rs:15:5
-   |
-15 |     PartialOrd,
-   |     ^^^^^^^^^^
-   |
-   = note: this warning originates in the derive macro `PartialOrd` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-warning: [Circus] Implementation of external trait cmp::Ord is not supported
-  --> src/mini_ledger_core/src/tokens.rs:16:5
-   |
-16 |     Ord,
-   |     ^^^
-   |
-   = note: this warning originates in the derive macro `Ord` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-warning: [Circus] Implementation of external trait default::Default is not supported
-  --> src/mini_ledger_core/src/tokens.rs:17:5
-   |
-17 |     Default,
-   |     ^^^^^^^
-   |
-   = note: this warning originates in the derive macro `Default` (in Nightly builds, run with -Z macro-backtrace for more info)
-
 warning: [Circus] Mutable self is not supported
    --> src/mini_ledger_core/src/tokens.rs:136:19
     |
@@ -168,72 +58,7 @@ warning: [Circus] Mutable self is not supported
 156 |     fn sub_assign(&mut self, other: Self) {
     |                   ^^^^^^^^^
 
-warning: `mini-ledger-core` (lib) generated 24 warnings
-   Compiling ic-cdk-macros v0.6.10
-   Compiling ic-cdk v0.6.10
-   Compiling mini-ledger v0.1.0 (/Users/franziskus/repos/mini-ledger/src/mini_ledger)
-warning: [Circus] loop and while are not supported
-  --> src/mini_ledger/src/account.rs:10:21
-   |
-10 | #[derive(Serialize, Deserialize, CandidType, Clone, Debug)]
-   |                     ^^^^^^^^^^^
-
-warning: [Circus] loop and while are not supported
- --> src/mini_ledger/src/endpoints.rs:9:22
-  |
-9 | #[derive(CandidType, Deserialize, Clone, Debug, PartialEq, Eq)]
-  |                      ^^^^^^^^^^^
-
-warning: [Circus] loop and while are not supported
-  --> src/mini_ledger/src/endpoints.rs:17:22
-   |
-17 | #[derive(CandidType, Deserialize, Clone, Debug, PartialEq, Eq)]
-   |                      ^^^^^^^^^^^
-
-warning: [Circus] loop and while are not supported
-  --> src/mini_ledger/src/endpoints.rs:25:22
-   |
-25 | #[derive(CandidType, Deserialize, Clone, Debug, PartialEq, Eq)]
-   |                      ^^^^^^^^^^^
-
-warning: [Circus] loop and while are not supported
-  --> src/mini_ledger/src/endpoints.rs:35:22
-   |
-35 | #[derive(CandidType, Deserialize, Clone, Debug, PartialEq, Eq)]
-   |                      ^^^^^^^^^^^
-
-warning: [Circus] loop and while are not supported
-  --> src/mini_ledger/src/endpoints.rs:98:22
-   |
-98 | #[derive(CandidType, Deserialize, Clone, Debug, PartialEq, Eq)]
-   |                      ^^^^^^^^^^^
-
-warning: [Circus] loop and while are not supported
-   --> src/mini_ledger/src/endpoints.rs:106:22
-    |
-106 | #[derive(CandidType, Deserialize, Clone, Debug, PartialEq, Eq)]
-    |                      ^^^^^^^^^^^
-
-warning: [Circus] loop and while are not supported
-   --> src/mini_ledger/src/endpoints.rs:113:22
-    |
-113 | #[derive(CandidType, Deserialize, Clone, Debug, PartialEq, Eq)]
-    |                      ^^^^^^^^^^^
-
-warning: [Circus] loop and while are not supported
-   --> src/mini_ledger/src/endpoints.rs:125:22
-    |
-125 | #[derive(CandidType, Deserialize, Clone, Debug, PartialEq, Eq)]
-    |                      ^^^^^^^^^^^
-
-warning: [Circus] Implementation of external trait default::Default is not supported
-  --> src/mini_ledger/src/hash.rs:13:10
-   |
-13 | #[derive(Default)]
-   |          ^^^^^^^
-   |
-   = note: this warning originates in the derive macro `Default` (in Nightly builds, run with -Z macro-backtrace for more info)
-
+warning: `mini-ledger-core` (lib) generated 10 warnings
 warning: [Circus] Mutable self is not supported
   --> src/mini_ledger/src/hash.rs:23:18
    |
@@ -246,127 +71,17 @@ warning: [Circus] loop and while are not supported
 52 |             loop {
    |             ^^^^
 
-warning: [Circus] loop and while are not supported
-  --> src/mini_ledger/src/transaction.rs:14:21
-   |
-14 | #[derive(Serialize, Deserialize, Debug)]
-   |                     ^^^^^^^^^^^
-
 warning: [Circus] Explicit lifetimes are not supported
   --> src/mini_ledger/src/transaction.rs:27:27
    |
 27 | pub fn de_compact_account<'de, D>(d: D) -> Result<Account, D::Error>
    |                           ^^^
 
-warning: [Circus] loop and while are not supported
-  --> src/mini_ledger/src/transaction.rs:92:21
-   |
-92 | #[derive(Serialize, Deserialize, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
-   |                     ^^^^^^^^^^^
-
-warning: [Circus] Implementation of external trait hash::Hash is not supported
-  --> src/mini_ledger/src/transaction.rs:92:41
-   |
-92 | #[derive(Serialize, Deserialize, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
-   |                                         ^^^^
-   |
-   = note: this warning originates in the derive macro `Hash` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-warning: [Circus] Implementation of external trait cmp::PartialOrd is not supported
-  --> src/mini_ledger/src/transaction.rs:92:69
-   |
-92 | #[derive(Serialize, Deserialize, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
-   |                                                                     ^^^^^^^^^^
-   |
-   = note: this warning originates in the derive macro `PartialOrd` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-warning: [Circus] Implementation of external trait cmp::Ord is not supported
-  --> src/mini_ledger/src/transaction.rs:92:81
-   |
-92 | #[derive(Serialize, Deserialize, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
-   |                                                                                 ^^^
-   |
-   = note: this warning originates in the derive macro `Ord` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-warning: [Circus] Implementation of external trait hash::Hash is not supported
-   --> src/mini_ledger/src/transaction.rs:139:48
-    |
-139 |     Serialize, Deserialize, CandidType, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord, Default,
-    |                                                ^^^^
-    |
-    = note: this warning originates in the derive macro `Hash` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-warning: [Circus] Implementation of external trait cmp::PartialOrd is not supported
-   --> src/mini_ledger/src/transaction.rs:139:76
-    |
-139 |     Serialize, Deserialize, CandidType, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord, Default,
-    |                                                                            ^^^^^^^^^^
-    |
-    = note: this warning originates in the derive macro `PartialOrd` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-warning: [Circus] Implementation of external trait cmp::Ord is not supported
-   --> src/mini_ledger/src/transaction.rs:139:88
-    |
-139 |     Serialize, Deserialize, CandidType, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord, Default,
-    |                                                                                        ^^^
-    |
-    = note: this warning originates in the derive macro `Ord` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-warning: [Circus] Implementation of external trait default::Default is not supported
-   --> src/mini_ledger/src/transaction.rs:139:93
-    |
-139 |     Serialize, Deserialize, CandidType, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord, Default,
-    |                                                                                             ^^^^^^^
-    |
-    = note: this warning originates in the derive macro `Default` (in Nightly builds, run with -Z macro-backtrace for more info)
-
 warning: [Circus] Explicit lifetimes are not supported
    --> src/mini_ledger/src/transaction.rs:144:27
     |
 144 | fn deserialize_memo_bytes<'de, D>(d: D) -> Result<ByteBuf, D::Error>
     |                           ^^^
-
-warning: [Circus] loop and while are not supported
-   --> src/mini_ledger/src/transaction.rs:191:21
-    |
-191 | #[derive(Serialize, Deserialize, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
-    |                     ^^^^^^^^^^^
-
-warning: [Circus] Implementation of external trait hash::Hash is not supported
-   --> src/mini_ledger/src/transaction.rs:191:41
-    |
-191 | #[derive(Serialize, Deserialize, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
-    |                                         ^^^^
-    |
-    = note: this warning originates in the derive macro `Hash` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-warning: [Circus] Implementation of external trait cmp::PartialOrd is not supported
-   --> src/mini_ledger/src/transaction.rs:191:69
-    |
-191 | #[derive(Serialize, Deserialize, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
-    |                                                                     ^^^^^^^^^^
-    |
-    = note: this warning originates in the derive macro `PartialOrd` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-warning: [Circus] Implementation of external trait cmp::Ord is not supported
-   --> src/mini_ledger/src/transaction.rs:191:81
-    |
-191 | #[derive(Serialize, Deserialize, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
-    |                                                                                 ^^^
-    |
-    = note: this warning originates in the derive macro `Ord` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-warning: [Circus] loop and while are not supported
-  --> src/mini_ledger/src/lib.rs:24:21
-   |
-24 | #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
-   |                     ^^^^^^^^^^^
-
-warning: [Circus] loop and while are not supported
-   --> src/mini_ledger/src/lib.rs:115:21
-    |
-115 | #[derive(Serialize, Deserialize, Debug)]
-    |                     ^^^^^^^^^^^
 
 warning: [Circus] Mutable self is not supported
    --> src/mini_ledger/src/lib.rs:145:25
@@ -379,48 +94,6 @@ warning: [Circus] loop and while are not supported
     |
 232 |     while let Some(tx_info) = ledger.transactions_by_height().front() {
     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-warning: [Circus] loop and while are not supported
-   --> src/mini_ledger/src/lib.rs:446:21
-    |
-446 | #[derive(Serialize, Deserialize, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
-    |                     ^^^^^^^^^^^
-
-warning: [Circus] Implementation of external trait hash::Hash is not supported
-   --> src/mini_ledger/src/lib.rs:446:41
-    |
-446 | #[derive(Serialize, Deserialize, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
-    |                                         ^^^^
-    |
-    = note: this warning originates in the derive macro `Hash` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-warning: [Circus] Implementation of external trait cmp::PartialOrd is not supported
-   --> src/mini_ledger/src/lib.rs:446:69
-    |
-446 | #[derive(Serialize, Deserialize, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
-    |                                                                     ^^^^^^^^^^
-    |
-    = note: this warning originates in the derive macro `PartialOrd` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-warning: [Circus] Implementation of external trait cmp::Ord is not supported
-   --> src/mini_ledger/src/lib.rs:446:81
-    |
-446 | #[derive(Serialize, Deserialize, Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
-    |                                                                                 ^^^
-    |
-    = note: this warning originates in the derive macro `Ord` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-warning: [Circus] loop and while are not supported
-   --> src/mini_ledger/src/lib.rs:517:10
-    |
-517 | #[derive(Deserialize, CandidType, Clone, Debug, PartialEq, Eq)]
-    |          ^^^^^^^^^^^
-
-warning: [Circus] loop and while are not supported
-   --> src/mini_ledger/src/lib.rs:526:21
-    |
-526 | #[derive(Serialize, Deserialize, Debug)]
-    |                     ^^^^^^^^^^^
 
 warning: [Circus] Mutable self is not supported
    --> src/mini_ledger/src/lib.rs:614:21
@@ -452,7 +125,7 @@ warning: [Circus] Mutable self is not supported
 642 |     fn on_purged_transaction(&mut self, _height: BlockIndex) {}
     |                              ^^^^^^^^^
 
-warning: `mini-ledger` (lib) generated 53 warnings (11 duplicates)
+warning: `mini-ledger` (lib) generated 11 warnings
 warning: [Circus] Unsafe code is not supported
   --> src/mini_ledger/src/main.rs:17:1
    |
@@ -494,4 +167,4 @@ warning: [Circus] Async and await are not supported
     | |_^
 
 warning: `mini-ledger` (bin "mini-ledger") generated 7 warnings (2 duplicates)
-    Finished dev [unoptimized + debuginfo] target(s) in 17.38s
+    Finished dev [unoptimized + debuginfo] target(s) in 0.10s
