@@ -48,6 +48,16 @@ impl<T> HashOf<T> {
         }
     }
 
+    /// XXX: "Pointer" support is yet to be done
+    ///
+    /// error[CE0001]: Diagnostics.Context.ThirImport: Unimplemented { issue_id: None, details: Some("Pointer") }
+    ///   --> src/mini_ledger_core/src/block.rs:51:37
+    ///    |
+    /// 51 |       pub fn as_slice(&self) -> &[u8] {
+    ///    |  _____________________________________^
+    /// 52 | |         &self.inner
+    /// 53 | |     }
+    ///    | |_____^
     pub fn as_slice(&self) -> &[u8] {
         &self.inner
     }
@@ -89,7 +99,8 @@ impl<T> Serialize for HashOf<T> {
     }
 }
 
-impl<'de, T> Deserialize<'de> for HashOf<T> { // XXX: explicit lifetimes are not supported
+impl<'de, T> Deserialize<'de> for HashOf<T> {
+    // XXX: explicit lifetimes are not supported
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
