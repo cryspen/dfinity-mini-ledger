@@ -4,6 +4,7 @@ use std::convert::TryInto;
 use std::ops::Add;
 use std::time::{Duration, SystemTime};
 
+// error[CE0001]: Diagnostics.Context.ThirImport: Unimplemented { issue_id: None, details: Some("Pointer") }
 #[derive(
     Debug, Clone, Copy, CandidType, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash,
 )]

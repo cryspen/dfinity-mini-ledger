@@ -48,8 +48,6 @@ impl<T> HashOf<T> {
         }
     }
 
-    /// XXX: "Pointer" support is yet to be done
-    ///
     /// error[CE0001]: Diagnostics.Context.ThirImport: Unimplemented { issue_id: None, details: Some("Pointer") }
     ///   --> src/mini_ledger_core/src/block.rs:51:37
     ///    |
@@ -77,11 +75,14 @@ impl<T> FromStr for HashOf<T> {
         let slice = v.as_slice();
         match slice.try_into() {
             Ok(ba) => Ok(HashOf::new(ba)),
-            Err(_) => Err(format!(
-                "Expected a Vec of length {} but it was {}",
-                HASH_LENGTH,
-                v.len(),
-            )),
+            Err(_) => {
+                // error[CE0001]: Diagnostics.Context.ThirImport: Unimplemented { issue_id: None, details: Some("Pointer") }
+                Err(format!(
+                    "Expected a Vec of length {} but it was {}",
+                    HASH_LENGTH,
+                    v.len(),
+                ))
+            }
         }
     }
 }
@@ -113,6 +114,7 @@ impl<'de, T> Deserialize<'de> for HashOf<T> {
             type Value = HashOf<T>;
 
             fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+                // error[CE0001]: Diagnostics.Context.ThirImport: Unimplemented { issue_id: None, details: Some("Pointer") }
                 write!(
                     formatter,
                     "a hash of type {}: a blob with at most {} bytes",
@@ -134,6 +136,7 @@ impl<'de, T> Deserialize<'de> for HashOf<T> {
             where
                 E: serde::de::Error,
             {
+                // error[CE0001]: Diagnostics.Context.ThirImport: Unimplemented { issue_id: None, details: Some("expression ZstLiteral") }
                 HashOf::from_str(s).map_err(E::custom)
             }
         }
