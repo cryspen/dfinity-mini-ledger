@@ -207,16 +207,34 @@ pub trait LedgerData {
     // Ledger data structures
 
     fn balances(&self) -> &Balances<Self::AccountId, HashMap<Self::AccountId, Tokens>>;
+
+    #[hax_lib_macros::skip] // Returning a mutable borrow is not supported
     fn balances_mut(&mut self) -> &mut Balances<Self::AccountId, HashMap<Self::AccountId, Tokens>>;
 
     fn blockchain(&self) -> &Blockchain;
+
+    #[hax_lib_macros::skip] // Returning a mutable borrow is not supported
     fn blockchain_mut(&mut self) -> &mut Blockchain;
+    // We can use function like this instead
+    fn blockchain_add_block(&mut self, block: Self::Block) -> Result<BlockIndex, String>;
 
     fn transactions_by_hash(&self) -> &BTreeMap<HashOf<Self::Transaction>, BlockIndex>;
+
+    #[hax_lib_macros::skip] // Returning a mutable borrow is not supported
     fn transactions_by_hash_mut(&mut self) -> &mut BTreeMap<HashOf<Self::Transaction>, BlockIndex>;
+    fn remove_transactions_by_hash(&mut self, key: &HashOf<Self::Transaction>) -> Option<u64>;
+    fn insert_transactions_by_hash(
+        &mut self,
+        key: HashOf<Self::Transaction>,
+        value: u64,
+    ) -> Option<u64>;
 
     fn transactions_by_height(&self) -> &VecDeque<TransactionInfo<Self::Transaction>>;
+
+    #[hax_lib_macros::skip] // Returning a mutable borrow is not supported
     fn transactions_by_height_mut(&mut self) -> &mut VecDeque<TransactionInfo<Self::Transaction>>;
+    fn pop_front_transactions_by_height(&mut self);
+    fn push_back_transactions_by_height(&mut self, value: TransactionInfo<Self::Transaction>);
 
     /// The callback that the ledger framework calls when it purges a transaction.
     fn on_purged_transaction(&mut self, height: BlockIndex);
@@ -237,7 +255,7 @@ pub fn purge_old_transactions<L: LedgerData>(ledger: &mut L, now: TimeStamp) -> 
 
         let transaction_hash = tx_info.transaction_hash;
 
-        match ledger.transactions_by_hash_mut().remove(&transaction_hash) {
+        match ledger.remove_transactions_by_hash(&transaction_hash) {
             None => unreachable!(
                 concat!(
                     "invariant violation: transaction with hash {} ",
@@ -248,7 +266,7 @@ pub fn purge_old_transactions<L: LedgerData>(ledger: &mut L, now: TimeStamp) -> 
             Some(block_height) => ledger.on_purged_transaction(block_height),
         }
 
-        ledger.transactions_by_height_mut().pop_front();
+        ledger.pop_front_transactions_by_height();
 
         num_tx_purged += 1;
         if num_tx_purged >= max_tx_to_purge {
@@ -296,9 +314,10 @@ fn throttle<L: LedgerData>(ledger: &L, now: TimeStamp) -> bool {
     // get through within the transaction window.
     if num_in_window >= ledger.max_transactions_in_window() / 2 {
         // max num of transactions allowed per second
-        let max_rate = (0.5 * ledger.max_transactions_in_window() as f64
-            / ledger.transaction_window().as_secs_f64())
-        .ceil() as usize;
+        // XXX: floats are currently not supported
+        let max_rate = (((ledger.max_transactions_in_window() as u64 / 2)
+            / ledger.transaction_window().as_secs())
+            + 1) as usize;
 
         if ledger
             .transactions_by_height()
@@ -362,21 +381,18 @@ pub fn apply_transaction<L: LedgerData>(
     let block_timestamp = block.timestamp();
 
     let height = ledger
-        .blockchain_mut()
-        .add_block(block)
+        .blockchain_add_block(block)
         .expect("failed to add block");
 
     if let Some((_, tx_hash)) = maybe_time_and_hash {
         // The caller requested deduplication, so we have to remember this
         // transaction within the dedup window.
-        ledger.transactions_by_hash_mut().insert(tx_hash, height);
+        ledger.insert_transactions_by_hash(tx_hash, height);
 
-        ledger
-            .transactions_by_height_mut()
-            .push_back(TransactionInfo {
-                block_timestamp,
-                transaction_hash: tx_hash,
-            });
+        ledger.push_back_transactions_by_height(TransactionInfo {
+            block_timestamp,
+            transaction_hash: tx_hash,
+        });
     }
 
     let to_trim = if ledger.balances().store.len()
@@ -397,8 +413,7 @@ pub fn apply_transaction<L: LedgerData>(
         let parent_hash = ledger.blockchain().last_hash;
 
         ledger
-            .blockchain_mut()
-            .add_block(L::Block::from_transaction(parent_hash, burn_tx, now))
+            .blockchain_add_block(L::Block::from_transaction(parent_hash, burn_tx, now))
             .unwrap();
     }
 
@@ -611,6 +626,7 @@ impl LedgerData for Ledger {
         &self.balances
     }
 
+    #[hax_lib_macros::skip] // Returning a mutable borrow is not supported
     fn balances_mut(&mut self) -> &mut Balances<Self::AccountId, HashMap<Self::AccountId, Tokens>> {
         &mut self.balances
     }
@@ -619,24 +635,49 @@ impl LedgerData for Ledger {
         &self.blockchain
     }
 
+    #[hax_lib_macros::skip] // Returning a mutable borrow is not supported
     fn blockchain_mut(&mut self) -> &mut Blockchain {
         &mut self.blockchain
+    }
+
+    fn blockchain_add_block(&mut self, block: Self::Block) -> Result<BlockIndex, String> {
+        self.blockchain.add_block(block)
     }
 
     fn transactions_by_hash(&self) -> &BTreeMap<HashOf<Self::Transaction>, BlockIndex> {
         &self.transactions_by_hash
     }
 
+    #[hax_lib_macros::skip] // Returning a mutable borrow is not supported
     fn transactions_by_hash_mut(&mut self) -> &mut BTreeMap<HashOf<Self::Transaction>, BlockIndex> {
         &mut self.transactions_by_hash
+    }
+
+    fn remove_transactions_by_hash(&mut self, key: &HashOf<Self::Transaction>) -> Option<u64> {
+        self.transactions_by_hash.remove(key)
+    }
+
+    fn insert_transactions_by_hash(
+        &mut self,
+        key: HashOf<Self::Transaction>,
+        value: u64,
+    ) -> Option<u64> {
+        self.transactions_by_hash.insert(key, value)
     }
 
     fn transactions_by_height(&self) -> &VecDeque<TransactionInfo<Self::Transaction>> {
         &self.transactions_by_height
     }
 
+    #[hax_lib_macros::skip] // Returning a mutable borrow is not supported
     fn transactions_by_height_mut(&mut self) -> &mut VecDeque<TransactionInfo<Self::Transaction>> {
         &mut self.transactions_by_height
+    }
+    fn pop_front_transactions_by_height(&mut self) {
+        self.transactions_by_height.pop_front();
+    }
+    fn push_back_transactions_by_height(&mut self, value: TransactionInfo<Self::Transaction>) {
+        self.transactions_by_height.push_back(value);
     }
 
     fn on_purged_transaction(&mut self, _height: BlockIndex) {}

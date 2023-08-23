@@ -1,9 +1,6 @@
 use crate::tokens::Tokens;
 use serde::{Deserialize, Serialize};
-use std::collections::{
-    hash_map::Entry::{Occupied, Vacant},
-    HashMap,
-};
+use std::collections::HashMap;
 use std::marker::PhantomData;
 
 pub trait BalancesStore<AccountId> {
@@ -15,7 +12,7 @@ pub trait BalancesStore<AccountId> {
     /// return value is the new balance.
     fn update<F, E>(&mut self, acc: AccountId, action_on_acc: F) -> Result<Tokens, E>
     where
-        F: FnMut(Option<&Tokens>) -> Result<Tokens, E>;
+        F: Fn(Option<&Tokens>) -> Result<Tokens, E>;
 }
 
 impl<AccountId: std::hash::Hash + Eq> BalancesStore<AccountId> for HashMap<AccountId, Tokens> {
@@ -23,28 +20,46 @@ impl<AccountId: std::hash::Hash + Eq> BalancesStore<AccountId> for HashMap<Accou
         self.get(k)
     }
 
-    fn update<F, E>(&mut self, k: AccountId, mut f: F) -> Result<Tokens, E>
+    fn update<F, E>(&mut self, k: AccountId, f: F) -> Result<Tokens, E>
     where
-        F: FnMut(Option<&Tokens>) -> Result<Tokens, E>, // TODO[FK]: FnMut is disallowed - this can be rewritten
+        F: Fn(Option<&Tokens>) -> Result<Tokens, E>, // XXX: FnMut is disallowed - using Fn instead
     {
-        match self.entry(k) {
-            Occupied(mut entry) => {
-                let new_v = f(Some(entry.get()))?;
-                if new_v != Tokens::ZERO {
-                    *entry.get_mut() = new_v; // XXX: Why not use insert?
-                } else {
-                    entry.remove_entry();
-                }
-                Ok(new_v)
+        if let Some(entry) = self.get(&k) {
+            // Occupied
+            let new_v = f(Some(entry))?;
+            if new_v != Tokens::ZERO {
+                self.insert(k, new_v);
+            } else {
+                self.remove(&k);
             }
-            Vacant(entry) => {
-                let new_v = f(None)?;
-                if new_v != Tokens::ZERO {
-                    entry.insert(new_v);
-                }
-                Ok(new_v)
+            Ok(new_v)
+        } else {
+            // Vacant
+            let new_v = f(None)?;
+            if new_v != Tokens::ZERO {
+                self.insert(k, new_v);
             }
+            Ok(new_v)
         }
+
+        // match self.entry(k) { // XXX: This returns a mutable reference, which is not supported.
+        //     Occupied(mut entry) => {
+        //         let new_v = f(Some(entry.get()))?;
+        //         if new_v != Tokens::ZERO {
+        //             *entry.get_mut() = new_v; // XXX: get_mut returns a mutable reference and isn't allowed
+        //         } else {
+        //             entry.remove_entry();
+        //         }
+        //         Ok(new_v)
+        //     }
+        //     Vacant(entry) => {
+        //         let new_v = f(None)?;
+        //         if new_v != Tokens::ZERO {
+        //             entry.insert(new_v);
+        //         }
+        //         Ok(new_v)
+        //     }
+        // }
     }
 }
 
@@ -57,7 +72,7 @@ pub enum BalanceError {
 }
 
 /// Describes the state of users accounts at the tip of the chain
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)] // XXX: ignore and assume implementations exist
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub struct Balances<AccountId, S: BalancesStore<AccountId>> {
     // This uses a mutable map because we don't want to risk a space leak and we only require the
     // account balances at the tip of the chain
@@ -91,6 +106,7 @@ where
         }
     }
 
+    // Alternative, state passing implementation that can be extracted right now.
     pub fn transfer(
         &mut self, // TODO[FK]: not allowed for now but will be in the future
         from: &AccountId,

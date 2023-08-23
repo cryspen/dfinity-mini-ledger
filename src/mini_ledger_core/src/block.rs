@@ -48,19 +48,12 @@ impl<T> HashOf<T> {
         }
     }
 
-    /// error[CE0001]: Diagnostics.Context.ThirImport: Unimplemented { issue_id: None, details: Some("Pointer") }
-    ///   --> src/mini_ledger_core/src/block.rs:51:37
-    ///    |
-    /// 51 |       pub fn as_slice(&self) -> &[u8] {
-    ///    |  _____________________________________^
-    /// 52 | |         &self.inner
-    /// 53 | |     }
-    ///    | |_____^
     pub fn as_slice(&self) -> &[u8] {
         &self.inner
     }
 }
 
+// #[hax_lib_macros::skip] // &mut for function arguments is not supported
 impl<T> fmt::Display for HashOf<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let res = hex::encode(self.as_slice());
@@ -76,7 +69,6 @@ impl<T> FromStr for HashOf<T> {
         match slice.try_into() {
             Ok(ba) => Ok(HashOf::new(ba)),
             Err(_) => {
-                // error[CE0001]: Diagnostics.Context.ThirImport: Unimplemented { issue_id: None, details: Some("Pointer") }
                 Err(format!(
                     "Expected a Vec of length {} but it was {}",
                     HASH_LENGTH,
@@ -100,8 +92,8 @@ impl<T> Serialize for HashOf<T> {
     }
 }
 
+// #[hax_lib_macros::skip] // &mut for function arguments and explicit lifetimes are not supported
 impl<'de, T> Deserialize<'de> for HashOf<T> {
-    // XXX: explicit lifetimes are not supported
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
@@ -114,7 +106,6 @@ impl<'de, T> Deserialize<'de> for HashOf<T> {
             type Value = HashOf<T>;
 
             fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-                // error[CE0001]: Diagnostics.Context.ThirImport: Unimplemented { issue_id: None, details: Some("Pointer") }
                 write!(
                     formatter,
                     "a hash of type {}: a blob with at most {} bytes",
@@ -136,7 +127,6 @@ impl<'de, T> Deserialize<'de> for HashOf<T> {
             where
                 E: serde::de::Error,
             {
-                // error[CE0001]: Diagnostics.Context.ThirImport: Unimplemented { issue_id: None, details: Some("expression ZstLiteral") }
                 HashOf::from_str(s).map_err(E::custom)
             }
         }

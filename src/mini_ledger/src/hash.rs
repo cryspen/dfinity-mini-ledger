@@ -47,22 +47,39 @@ fn hash_value(value: &Value) -> Result<Hash, String> {
             // integer in LEB128.
             let mut buf = [0u8; 19];
             let mut n = v;
-            let mut i = 0;
 
-            loop {
-                let byte = (n & 0x7f) as u8;
-                n >>= 7;
+            // XXX: This loops needs to be rewritten because it's not supported.
+            //      But it could also look nicer.
+            let mut done = false;
+            let mut msb = 0;
+            for i in 0..19 {
+                if !done {
+                    let byte = (n & 0x7f) as u8;
+                    n >>= 7;
 
-                if n == 0 {
-                    buf[i] = byte;
-                    break;
-                } else {
-                    buf[i] = byte | 0x80;
-                    i += 1;
+                    if n == 0 {
+                        buf[i] = byte;
+                        msb = i;
+                        done = true;
+                    } else {
+                        buf[i] = byte | 0x80;
+                    }
                 }
             }
+            // loop {
+            //     let byte = (n & 0x7f) as u8;
+            //     n >>= 7;
 
-            Ok(Sha256::hash(&buf[..=i]))
+            //     if n == 0 {
+            //         buf[i] = byte;
+            //         break;
+            //     } else {
+            //         buf[i] = byte | 0x80;
+            //         i += 1;
+            //     }
+            // }
+
+            Ok(Sha256::hash(&buf[..=msb]))
         }
         Value::Bytes(bytes) => Ok(Sha256::hash(bytes)),
         Value::Text(text) => Ok(Sha256::hash(text.as_bytes())),
