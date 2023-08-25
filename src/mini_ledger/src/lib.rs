@@ -50,9 +50,7 @@ pub trait LedgerTransaction: Sized {
     fn hash(&self) -> HashOf<Self>;
 
     /// Applies this transaction to the balance book.
-    fn apply<S>(&self, balances: &mut Balances<Self::AccountId, S>) -> Result<(), BalanceError>
-    where
-        S: Default + BalancesStore<Self::AccountId>;
+    fn apply<L: LedgerData>(&self, ledger: &mut L) -> Result<(), BalanceError>;
 }
 
 impl LedgerTransaction for Transaction {
@@ -94,19 +92,20 @@ impl LedgerTransaction for Transaction {
             })
     }
 
-    fn apply<S>(&self, balances: &mut Balances<Self::AccountId, S>) -> Result<(), BalanceError>
-    where
-        S: Default + BalancesStore<Self::AccountId>,
-    {
+    fn apply<L: LedgerData>(&self, ledger: &mut L) -> Result<(), BalanceError> {
         match &self.operation {
             Operation::Transfer {
                 from,
                 to,
                 amount,
                 fee,
-            } => balances.transfer(from, to, Tokens::from_e8s(*amount), Tokens::from_e8s(*fee)),
-            Operation::Burn { from, amount } => balances.burn(from, Tokens::from_e8s(*amount)),
-            Operation::Mint { to, amount } => balances.mint(to, Tokens::from_e8s(*amount)),
+            } => {
+                ledger.transfer_balance(from, to, Tokens::from_e8s(*amount), Tokens::from_e8s(*fee))
+            }
+            Operation::Burn { from, amount } => {
+                ledger.burn_balance(from, Tokens::from_e8s(*amount))
+            }
+            Operation::Mint { to, amount } => ledger.mint_balance(to, Tokens::from_e8s(*amount)),
         }
     }
 }
@@ -210,6 +209,15 @@ pub trait LedgerData {
 
     #[hax_lib_macros::skip] // Returning a mutable borrow is not supported
     fn balances_mut(&mut self) -> &mut Balances<Self::AccountId, HashMap<Self::AccountId, Tokens>>;
+    fn transfer_balance(
+        &mut self,
+        from: &Account,
+        to: &Account,
+        amount: Tokens,
+        fee: Tokens,
+    ) -> Result<(), BalanceError>;
+    fn mint_balance(&mut self, to: &Account, amount: Tokens) -> Result<(), BalanceError>;
+    fn burn_balance(&mut self, from: &Account, amount: Tokens) -> Result<(), BalanceError>;
 
     fn blockchain(&self) -> &Blockchain;
 
@@ -245,35 +253,66 @@ pub trait LedgerData {
 /// transactions.
 pub fn purge_old_transactions<L: LedgerData>(ledger: &mut L, now: TimeStamp) -> usize {
     let max_tx_to_purge = ledger.max_transactions_to_purge();
-    let mut num_tx_purged = 0usize;
+    let mut num_tx_purged_out = 0usize;
+    let mut break_loop = false;
 
-    while let Some(tx_info) = ledger.transactions_by_height().front() {
-        if tx_info.block_timestamp + ledger.transaction_window() + PERMITTED_DRIFT >= now {
-            // Stop at a sufficiently recent block.
-            break;
-        }
+    for num_tx_purged in 0..max_tx_to_purge {
+        if !break_loop {
+            num_tx_purged_out = num_tx_purged;
+            if let Some(tx_info) = ledger.transactions_by_height().front() {
+                if tx_info.block_timestamp + ledger.transaction_window() + PERMITTED_DRIFT >= now {
+                    // Stop at a sufficiently recent block.
+                    // XXX: break is unfortunately not quite working yet
+                    // break;
+                    break_loop = true;
+                }
 
-        let transaction_hash = tx_info.transaction_hash;
+                let transaction_hash = tx_info.transaction_hash;
 
-        match ledger.remove_transactions_by_hash(&transaction_hash) {
-            None => unreachable!(
-                concat!(
-                    "invariant violation: transaction with hash {} ",
-                    "is in transaction_by_height but not in transactions_by_hash"
-                ),
-                transaction_hash
-            ),
-            Some(block_height) => ledger.on_purged_transaction(block_height),
-        }
+                match ledger.remove_transactions_by_hash(&transaction_hash) {
+                    None => unreachable!(
+                        concat!(
+                            "invariant violation: transaction with hash {} ",
+                            "is in transaction_by_height but not in transactions_by_hash"
+                        ),
+                        transaction_hash
+                    ),
+                    Some(block_height) => ledger.on_purged_transaction(block_height),
+                }
 
-        ledger.pop_front_transactions_by_height();
-
-        num_tx_purged += 1;
-        if num_tx_purged >= max_tx_to_purge {
-            break;
+                ledger.pop_front_transactions_by_height();
+            }
         }
     }
-    num_tx_purged
+
+    // XXX: while loops are not supported
+    // while let Some(tx_info) = ledger.transactions_by_height().front() {
+    //     if tx_info.block_timestamp + ledger.transaction_window() + PERMITTED_DRIFT >= now {
+    //         // Stop at a sufficiently recent block.
+    //         break;
+    //     }
+
+    //     let transaction_hash = tx_info.transaction_hash;
+
+    //     match ledger.remove_transactions_by_hash(&transaction_hash) {
+    //         None => unreachable!(
+    //             concat!(
+    //                 "invariant violation: transaction with hash {} ",
+    //                 "is in transaction_by_height but not in transactions_by_hash"
+    //             ),
+    //             transaction_hash
+    //         ),
+    //         Some(block_height) => ledger.on_purged_transaction(block_height),
+    //     }
+
+    //     ledger.pop_front_transactions_by_height();
+
+    //     num_tx_purged += 1;
+    //     if num_tx_purged >= max_tx_to_purge {
+    //         break;
+    //     }
+    // }
+    num_tx_purged_out
 }
 
 // Find the specified number of accounts with lowest balances so that their
@@ -283,14 +322,14 @@ fn select_accounts_to_trim<L: LedgerData>(ledger: &L) -> Vec<(Tokens, L::Account
         std::collections::BinaryHeap::new();
 
     let num_accounts = ledger.accounts_overflow_trim_quantity();
-    let mut iter = ledger.balances().store.iter();
 
     // Accumulate up to `trim_quantity` accounts
-    for (account, balance) in iter.by_ref().take(num_accounts) {
+    // XXX: by_ref is not supported yet.
+    for (account, balance) in ledger.balances().store.iter().take(num_accounts) {
         to_trim.push((*balance, account.clone()));
     }
 
-    for (account, balance) in iter {
+    for (account, balance) in ledger.balances().store.iter().skip(num_accounts) {
         // If any account's balance is lower than the maximum in our set,
         // include that account, and remove the current maximum
         if let Some((greatest_balance, _)) = to_trim.peek() {
@@ -332,6 +371,7 @@ fn throttle<L: LedgerData>(ledger: &L, now: TimeStamp) -> bool {
     }
     false
 }
+
 /// Adds a new block with the specified transaction to the ledger.
 pub fn apply_transaction<L: LedgerData>(
     ledger: &mut L,
@@ -369,13 +409,9 @@ pub fn apply_transaction<L: LedgerData>(
         }
     }
 
-    transaction
-        .apply(ledger.balances_mut())
-        .map_err(|e| match e {
-            BalanceError::InsufficientFunds { balance } => {
-                TransferError::InsufficientFunds { balance }
-            }
-        })?;
+    transaction.apply(ledger).map_err(|e| match e {
+        BalanceError::InsufficientFunds { balance } => TransferError::InsufficientFunds { balance },
+    })?;
 
     let block = L::Block::from_transaction(ledger.blockchain().last_hash, transaction, now);
     let block_timestamp = block.timestamp();
@@ -407,7 +443,7 @@ pub fn apply_transaction<L: LedgerData>(
         let burn_tx = L::Transaction::burn(account, balance, Some(now), Some(TRIMMED_MEMO));
 
         burn_tx
-            .apply(ledger.balances_mut())
+            .apply(ledger)
             .expect("failed to burn funds that must have existed");
 
         let parent_hash = ledger.blockchain().last_hash;
@@ -629,6 +665,22 @@ impl LedgerData for Ledger {
     #[hax_lib_macros::skip] // Returning a mutable borrow is not supported
     fn balances_mut(&mut self) -> &mut Balances<Self::AccountId, HashMap<Self::AccountId, Tokens>> {
         &mut self.balances
+    }
+
+    fn transfer_balance(
+        &mut self,
+        from: &Account,
+        to: &Account,
+        amount: Tokens,
+        fee: Tokens,
+    ) -> Result<(), BalanceError> {
+        self.balances.transfer(from, to, amount, fee)
+    }
+    fn mint_balance(&mut self, to: &Account, amount: Tokens) -> Result<(), BalanceError> {
+        self.balances.mint(to, amount)
+    }
+    fn burn_balance(&mut self, from: &Account, amount: Tokens) -> Result<(), BalanceError> {
+        self.balances.burn(from, amount)
     }
 
     fn blockchain(&self) -> &Blockchain {

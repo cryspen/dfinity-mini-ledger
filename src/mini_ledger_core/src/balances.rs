@@ -77,9 +77,9 @@ pub struct Balances<AccountId, S: BalancesStore<AccountId>> {
     // This uses a mutable map because we don't want to risk a space leak and we only require the
     // account balances at the tip of the chain
     pub store: S,
-    #[serde(alias = "icpt_pool")] // XXX: ignore and assume implementations exist
+    #[serde(alias = "icpt_pool")]
     pub token_pool: Tokens,
-    #[serde(skip)] // XXX: ignore and assume implementations exist
+    #[serde(skip)]
     _marker: PhantomData<AccountId>,
 }
 
@@ -108,7 +108,7 @@ where
 
     // Alternative, state passing implementation that can be extracted right now.
     pub fn transfer(
-        &mut self, // TODO[FK]: not allowed for now but will be in the future
+        &mut self,
         from: &AccountId,
         to: &AccountId,
         amount: Tokens,
@@ -135,7 +135,7 @@ where
     }
 
     pub fn mint(&mut self, to: &AccountId, amount: Tokens) -> Result<(), BalanceError> {
-        self.token_pool = (self.token_pool - amount).expect("total token supply exceeded"); // XXX: why not return an error?
+        self.token_pool = (self.token_pool - amount).expect("total token supply exceeded");
         self.credit(to, amount);
         Ok(())
     }

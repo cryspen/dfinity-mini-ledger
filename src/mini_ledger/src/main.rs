@@ -33,6 +33,7 @@ pub trait LedgerAccess {
     /// # Panics
     ///
     /// Panics if `f` tries to call `with_ledger` or `with_ledger_mut` recurvively.
+    #[hax_lib_macros::skip]
     fn with_ledger_mut<R>(f: impl FnOnce(&mut Self::Ledger) -> R) -> R;
 }
 
@@ -40,6 +41,7 @@ struct Access;
 impl LedgerAccess for Access {
     type Ledger = Ledger;
 
+    #[hax_lib_macros::skip]
     fn with_ledger<R>(f: impl FnOnce(&Ledger) -> R) -> R {
         LEDGER.with(|cell| {
             f(cell
@@ -49,6 +51,7 @@ impl LedgerAccess for Access {
         })
     }
 
+    #[hax_lib_macros::skip]
     fn with_ledger_mut<R>(f: impl FnOnce(&mut Ledger) -> R) -> R {
         LEDGER.with(|cell| {
             f(cell
@@ -59,6 +62,7 @@ impl LedgerAccess for Access {
     }
 }
 
+#[hax_lib_macros::skip]
 #[init]
 fn init(args: InitArgs) {
     let now = TimeStamp::from_nanos_since_unix_epoch(ic_cdk::api::time());
@@ -71,6 +75,7 @@ fn pre_upgrade() {
         .expect("failed to encode ledger state");
 }
 
+#[hax_lib_macros::skip]
 #[post_upgrade]
 fn post_upgrade() {
     LEDGER.with(|cell| {
@@ -118,6 +123,7 @@ fn icrc1_balance_of(account: Account) -> Nat {
     Access::with_ledger(|ledger| Nat::from(ledger.balances().account_balance(&account).get_e8s()))
 }
 
+#[hax_lib_macros::skip]
 #[update]
 #[candid_method(update)]
 async fn icrc1_transfer(arg: TransferArg) -> Result<Nat, TransferError> {
