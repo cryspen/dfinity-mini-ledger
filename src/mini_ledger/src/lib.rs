@@ -7,7 +7,7 @@ use account::Account;
 use candid::{types::number::Nat, CandidType};
 use endpoints::{GetTransactionsResponse, Transaction as Tx};
 use mini_ledger_core::{
-    balances::{BalanceError, Balances, BalancesStore},
+    balances::{BalanceError, Balances},
     block::{BlockIndex, BlockType, EncodedBlock, HashOf},
     timestamp::TimeStamp,
     tokens::Tokens,
