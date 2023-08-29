@@ -12,11 +12,17 @@ use mini_ledger::{apply_transaction, LedgerData};
 use mini_ledger::{InitArgs, Ledger};
 use mini_ledger_core::{timestamp::TimeStamp, tokens::Tokens};
 use num_traits::ToPrimitive;
-use std::cell::RefCell;
 
-thread_local! {
-    static LEDGER: RefCell<Option<Ledger>> = RefCell::new(None);
+#[hax_lib_macros::skip]
+mod unsafe_block {
+    use super::*;
+    use std::cell::RefCell;
+
+    thread_local! {
+        pub static LEDGER: RefCell<Option<Ledger>> = RefCell::new(None);
+    }
 }
+pub use unsafe_block::*;
 
 pub trait LedgerAccess {
     type Ledger: LedgerData;
